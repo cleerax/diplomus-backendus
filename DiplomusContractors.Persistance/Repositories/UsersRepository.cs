@@ -1,11 +1,6 @@
 ﻿using DiplomusContractors.Options.Repositories;
 using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DiplomusContractors.Users.Models;
 using DiplomusContractors.Repositories.Users;
 
@@ -16,7 +11,7 @@ public class UsersRepository : IUsersRepository
 
     public UsersRepository(IOptions<DbOptions> options) => _connectionString = options.Value.ConnectionString;
 
-    public async Task AddUser(string username, string password, string? email, CancellationToken cancellationToken)
+    public async Task AddUserAsync(string username, string password, string? email, CancellationToken cancellationToken)
     {
         const string query = @"
 INSERT INTO users (username, password, email) VALUES (@username, @password, @email);
@@ -55,7 +50,7 @@ SELECT LAST_INSERT_ID();";
         }
     }
 
-    public async Task<User?> GetUser(int userId, CancellationToken cancellationToken)
+    public async Task<User?> GetUserAsync(int userId, CancellationToken cancellationToken)
     {
         const string rolesQuery = @"SELECT user_role FROM user_roles WHERE user_id = @user_id;";
 
@@ -106,7 +101,7 @@ WHERE user_id = @id;
                 return null;
     }
 
-    public async Task<UserHashedPassword?> GetUserPassword(string username, CancellationToken cancellationToken)
+    public async Task<UserHashedPassword?> GetUserPasswordAsync(string username, CancellationToken cancellationToken)
     {
         const string query = @"
 SELECT user_id, password

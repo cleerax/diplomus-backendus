@@ -25,7 +25,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            await _usersService.RegisterUser(request, cancellationToken);
+            await _usersService.RegisterUserAsync(request, cancellationToken);
         }
         catch (ArgumentException)
         {
@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
     [HttpPost("login")]
     public async Task<UserLoginResponse?> LoginAsync([FromBody] UserLoginRequest request, CancellationToken cancellationToken)
     {
-        var user = await _usersService.AuthenticateUser(request, cancellationToken);
+        var user = await _usersService.AuthenticateUserAsync(request, cancellationToken);
 
         if (user == null)
             return null;

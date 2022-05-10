@@ -5,6 +5,6 @@ namespace DiplomusContractors.Users;
 
 public interface IUsersService
 {
-    Task<User?> AuthenticateUser(UserLoginRequest request, CancellationToken cancellationToken);
-    Task RegisterUser(RegisterUserRequest request, CancellationToken cancellationToken);
+    Task<User?> AuthenticateUserAsync(UserLoginRequest request, CancellationToken cancellationToken);
+    Task RegisterUserAsync(RegisterUserRequest request, CancellationToken cancellationToken);
 }

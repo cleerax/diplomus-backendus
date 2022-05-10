@@ -3,11 +3,6 @@ using DiplomusContractors.Users;
 using DiplomusContractors.Users.Contracts;
 using DiplomusContractors.Users.Models;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DiplomusContractors.Services.Users;
 
@@ -22,23 +17,23 @@ public class UsersService : IUsersService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<User?> AuthenticateUser(UserLoginRequest request, CancellationToken cancellationToken)
+    public async Task<User?> AuthenticateUserAsync(UserLoginRequest request, CancellationToken cancellationToken)
     {
-        var userHashedPassword = await _repository.GetUserPassword(request.Username, cancellationToken);
+        var userHashedPassword = await _repository.GetUserPasswordAsync(request.Username, cancellationToken);
 
         if (userHashedPassword is null)
             return null;
 
         if (_passwordHasher.VerifyHashedPassword(request.Username, userHashedPassword.HashedPassword, request.Password) == PasswordVerificationResult.Success)
-            return await _repository.GetUser(userHashedPassword.UserId, cancellationToken);
+            return await _repository.GetUserAsync(userHashedPassword.UserId, cancellationToken);
         else
             return null;
     }
 
-    public async Task RegisterUser(RegisterUserRequest request, CancellationToken cancellationToken)
+    public async Task RegisterUserAsync(RegisterUserRequest request, CancellationToken cancellationToken)
     {
         var hashedPassword = _passwordHasher.HashPassword(request.Username, request.Password);
 
-        await _repository.AddUser(request.Username, hashedPassword, request.Email, cancellationToken);
+        await _repository.AddUserAsync(request.Username, hashedPassword, request.Email, cancellationToken);
     }
 }

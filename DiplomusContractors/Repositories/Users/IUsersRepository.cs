@@ -9,7 +9,7 @@ namespace DiplomusContractors.Repositories.Users;
 
 public interface IUsersRepository
 {
-    Task<UserHashedPassword?> GetUserPassword(string username, CancellationToken cancellationToken);
-    Task<User?> GetUser(int userId, CancellationToken cancellationToken);
-    Task AddUser(string username, string password, string? email, CancellationToken cancellationToken);
+    Task<UserHashedPassword?> GetUserPasswordAsync(string username, CancellationToken cancellationToken);
+    Task<User?> GetUserAsync(int userId, CancellationToken cancellationToken);
+    Task AddUserAsync(string username, string password, string? email, CancellationToken cancellationToken);
 }

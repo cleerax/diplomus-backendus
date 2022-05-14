@@ -1,5 +1,6 @@
 ﻿using DiplomusContractors.Products;
 using DiplomusContractors.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DiplomusContractors.Hosting.Controllers;
@@ -16,10 +17,12 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("pageCount")]
+    [Authorize]
     public async Task<PageCountResponse> GetPageCountAsync([FromQuery] int pageSize = 30, CancellationToken cancellationToken = default) =>
         new PageCountResponse(await _productsService.GetPageCountAsync(pageSize, cancellationToken));
 
     [HttpGet]
+    [Authorize]
     public async Task<Product[]> GetProductsPageAsync([FromQuery] int pageSize = 30, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default) =>
         await _productsService.GetProductsPageAsync(pageSize, pageNumber, cancellationToken).ToArrayAsync(cancellationToken);
 }

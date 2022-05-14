@@ -29,7 +29,7 @@ public class ProductsService : IProductsService
                 product.ProductId,
                 product.ProductName,
                 product.ProductStatus,
-                await _contractorRepository.GetProductContractors(product.ProductId, cancellationToken).ToArrayAsync(cancellationToken));
+                await _contractorRepository.GetProductContractorsAsync(product.ProductId, cancellationToken).ToArrayAsync(cancellationToken));
         }
     }
 }

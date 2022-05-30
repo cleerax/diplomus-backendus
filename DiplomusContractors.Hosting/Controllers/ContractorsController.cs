@@ -1,5 +1,6 @@
 ﻿using DiplomusContractors.Contractors;
 using DiplomusContractors.Repositories;
+using DiplomusContractors.Repositories.Contractors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,27 +9,27 @@ namespace DiplomusContractors.Hosting.Controllers;
 [ApiController]
 public class ContractorsController : ControllerBase
 {
-    public readonly IContractorsService _contractorsService;
+    private readonly IContractorsRepository _contractorsRepository;
 
-    public ContractorsController(IContractorsService contractorsService)
+    public ContractorsController(IContractorsRepository contractorsRepository)
     {
-        _contractorsService = contractorsService;
+        _contractorsRepository = contractorsRepository;
     }
 
     [HttpGet("pageCount")]
     [Authorize]
     public async Task<PageCountResponse> GetPageCountAsync([FromQuery] int pageSize = 30, CancellationToken cancellationToken = default) =>
-        new PageCountResponse(await _contractorsService.GetPageCountAsync(pageSize, cancellationToken));
+        new PageCountResponse(await _contractorsRepository.GetPagesCountAsync(pageSize, cancellationToken));
 
     [HttpGet("{id}")]
     [Authorize]
     public async Task<Contractor?> GetByIdAsync(int id, CancellationToken cancellationToken) =>
-        await _contractorsService.GetByIdAsync(id, cancellationToken);
+        await _contractorsRepository.GetByIdAsync(id, cancellationToken);
 
     [HttpGet]
     [Authorize]
     public async Task<Contractor[]> GetPageAsync([FromQuery] int pageSize = 30, [FromQuery] int pageNumber = 1, CancellationToken cancellationToken = default) =>
-        await _contractorsService.GetPageAsync(pageSize, pageNumber, cancellationToken);
+        await _contractorsRepository.GetPageAsync(pageSize, pageNumber, cancellationToken).ToArrayAsync(cancellationToken);
 
     [HttpGet("{id}/products")]
     [Authorize]
@@ -37,10 +38,11 @@ public class ContractorsController : ControllerBase
         [FromQuery] int pageSize = 30,
         [FromQuery] int pageNumber = 1,
         CancellationToken cancellationToken = default) =>
-        await _contractorsService.GetContractorProductsPageAsync(id, pageSize, pageNumber, cancellationToken);
+        await _contractorsRepository.GetContractorProductsPageAsync(id, pageSize, pageNumber, cancellationToken)
+            .ToArrayAsync(cancellationToken);
 
     [HttpGet("{id}/products/pageCount")]
     [Authorize]
     public async Task<PageCountResponse> GetProuctsPageCountAsync(int id, [FromQuery] int pageSize = 30, CancellationToken cancellationToken = default) =>
-        new PageCountResponse(await _contractorsService.GetProductsPageCountAsync(id, pageSize, cancellationToken));
+        new PageCountResponse(await _contractorsRepository.GetProductPagesCountAsync(id, pageSize, cancellationToken));
 }

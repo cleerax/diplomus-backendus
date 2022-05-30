@@ -36,8 +36,8 @@ public class ProductsRepository : IProductsRepository
     public async IAsyncEnumerable<Product> GetPageAsync(int pageSize, int pageNumber, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         const string query = @"
-SELECT product_id, product_name, product_status
-FROM products
+SELECT product_id, product_name, product_status, category_id, category_name, product_availability
+FROM products JOIN categories USING (category_id)
 LIMIT @skip, @limit";
 
         await using var connection = new MySqlConnection(_connectionString);
@@ -54,7 +54,15 @@ LIMIT @skip, @limit";
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
-            yield return new Product(reader.GetInt32(0), reader.GetString(1), reader.GetString(2).ConvertToProductStatus());
+            yield return new Product(
+                reader.GetInt32(0),
+                reader.GetString(1),
+                reader.GetString(2).ConvertToProductStatus(),
+                reader.IsDBNull(3) ? null :
+                new Category(
+                    reader.GetInt32(3),
+                    reader.GetString(4)),
+                reader.GetBoolean(5));
         }
     }
 }

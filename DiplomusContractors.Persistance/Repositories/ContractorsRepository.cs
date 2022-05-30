@@ -67,7 +67,8 @@ SELECT c.contractor_id,
        c.contractor_inn,
        c.contractor_address,
        c.image_link,
-       cp.price
+       cp.price,
+       cp.delivery_price
 FROM contractors_products cp JOIN contractors c ON cp.contractor_id = c.contractor_id
 WHERE cp.product_id = @product_id;
 ";
@@ -85,6 +86,8 @@ WHERE cp.product_id = @product_id;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
+            var price = reader.GetDecimal(6);
+
             yield return new Products.Product.ProductContractor(
                 reader.GetInt32(0),
                 reader.GetString(1),
@@ -92,7 +95,12 @@ WHERE cp.product_id = @product_id;
                 reader.IsDBNull(3) ? null : reader.GetString(3),
                 reader.IsDBNull(4) ? null : reader.GetString(4),
                 reader.IsDBNull(5) ? null : reader.GetString(5),
-                reader.GetDecimal(6));
+                reader.GetDecimal(6),
+                reader.IsDBNull(7) ? null : reader.GetDecimal(7),
+                Math.Round(price + price * 0.3m, 2),
+                Math.Round(price * 0.9m, 2),
+                Math.Round(price * 0.95m, 2),
+                Math.Round(price * 0.97m, 2));
         }
     }
 
@@ -169,8 +177,10 @@ WHERE contractor_id = @contractor_id;
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         const string query = @"
-SELECT product_id, product_name, product_status, price
-FROM contractors_products JOIN products USING (product_id)
+SELECT product_id, product_name, category_id, category_name, product_status, price, delivery_price, product_availability
+FROM contractors_products
+    JOIN products USING (product_id)
+    JOIN categories USING (category_id)
 WHERE contractor_id = @contractor_id
 LIMIT @skip, @limit;
 ";
@@ -190,11 +200,20 @@ LIMIT @skip, @limit;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
+            var price = reader.GetDecimal(5);
+
             yield return new ContractorProduct(
                 reader.GetInt32(0),
                 reader.GetString(1),
-                reader.GetString(2).ConvertToProductStatus(),
-                reader.GetDecimal(3));
+                reader.IsDBNull(2) ? null :
+                    new Category(
+                        reader.GetInt32(2),
+                        reader.GetString(3)),
+                reader.GetString(4).ConvertToProductStatus(),
+                price,
+                reader.GetDecimal(6),
+                Math.Round(price + price * 0.3m, 2),
+                reader.GetBoolean(7));
         }
     }
 }

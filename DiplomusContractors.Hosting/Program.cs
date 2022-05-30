@@ -8,8 +8,6 @@ using DiplomusContractors.Repositories.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using DiplomusContractors.Hosting.Authorization;
 using Microsoft.OpenApi.Models;
-using DiplomusContractors.Contractors;
-using DiplomusContractors.Services.Contractors;
 using DiplomusContractors.Services.Products;
 using DiplomusContractors.Products;
 using DiplomusContractors.Repositories.Contractors;
@@ -78,7 +76,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Services
 
 builder.Services.AddScoped<IUsersService, UsersService>()
-    .AddScoped<IContractorsService, ContractorsService>()
     .AddScoped<IProductsService, ProductsService>()
     .AddScoped<IPasswordHasher<string>, PasswordHasher<string>>();
 

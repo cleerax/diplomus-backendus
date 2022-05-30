@@ -7,4 +7,4 @@ using System.Threading.Tasks;
 
 namespace DiplomusContractors.Contractors;
 
-public record ContractorProduct(int Id, string Name, ProductStatus Status, decimal Price);
+public record ContractorProduct(int Id, string Name, Category? Category, ProductStatus Status, decimal Price, decimal DeliveryPrice, decimal MarketPrice, bool IsAvailable);

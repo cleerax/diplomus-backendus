@@ -28,8 +28,10 @@ public class ProductsService : IProductsService
             yield return new DiplomusContractors.Products.Product(
                 product.ProductId,
                 product.ProductName,
+                product.Category,
                 product.ProductStatus,
-                await _contractorRepository.GetProductContractorsAsync(product.ProductId, cancellationToken).ToArrayAsync(cancellationToken));
+                await _contractorRepository.GetProductContractorsAsync(product.ProductId, cancellationToken).ToArrayAsync(cancellationToken),
+                product.IsAvailable);
         }
     }
 }
